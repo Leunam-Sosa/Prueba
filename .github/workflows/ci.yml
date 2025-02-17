@@ -1,30 +1,50 @@
-name: Node.js CI
+name: Deploy to Surge
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main  # Este flujo se ejecutará cuando se haga push a la rama 'main'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest  # Usamos un contenedor Ubuntu para ejecutar el trabajo
 
     steps:
-    - name: Checkout code
+    # Paso 1: Clonar el repositorio
+    - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+    # Paso 2: Verificar la estructura del directorio
+    - name: List files
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Contents of the directory:"
+        ls
 
+    # Paso 3: Cambiar al directorio 'HolaMundo' (asegúrate de que existe)
+    - name: Change to HolaMundo directory
+      run: |
+        cd HolaMundo
+        echo "Now in directory:"
+        pwd
+        echo "Listing contents of HolaMundo:"
+        ls
+
+    # Paso 4: Instalar dependencias si es necesario
     - name: Install dependencies
       run: |
-        cd HolaMundo  # Cambiar al directorio donde está el package.json
+        cd HolaMundo
         npm install
 
-    - name: Run tests
+    # Paso 5: Configurar Surge y desplegar
+    - name: Deploy to Surge
       run: |
-        cd HolaMundo  # Asegurarse de estar en el directorio correcto
-        npm test
+        # Asegúrate de que Surge esté instalado
+        npm install --global surge
+        
+        # Configura la clave de API de Surge
+        surge token ${{ secrets.SURGE_API_KEY }}  # Asegúrate de agregar tu Surge API key en los secrets de GitHub
+        
+        # Despliega a Surge con un subdominio único
+        surge --project ./HolaMundo --domain <SURGE_SUBDOMAIN>.surge.sh
