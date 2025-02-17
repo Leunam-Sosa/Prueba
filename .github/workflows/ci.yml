@@ -1,34 +1,30 @@
-name: Continuous Integration
+name: Node.js CI
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    branches: [main]
   pull_request:
-    branches:
-      - main
-      - dev
+    branches: [main]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-      # Paso 1: Check out el código del repositorio
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Paso 2: Configurar Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'  # Asegúrate de usar la versión que necesites
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
 
-      # Paso 3: Instalar dependencias
-      - name: Install dependencies
-        run: npm install
+    - name: Install dependencies
+      run: |
+        cd HolaMundo  # Cambiar al directorio donde está el package.json
+        npm install
 
-      # Paso 4: Ejecutar pruebas
-      - name: Run tests
-        run: npm test
+    - name: Run tests
+      run: |
+        cd HolaMundo  # Asegurarse de estar en el directorio correcto
+        npm test
